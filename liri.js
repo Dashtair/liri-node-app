@@ -1,14 +1,16 @@
 require("dotenv").config();
 var fs = require('fs');
 
-var keys = require(' ./keys.js');
+var keys = require('./keys');
 
 var Spotify = require('node-spotify-api');
-var sppotify = new Spotify(keys.twitter);
+var spotify = new Spotify(keys.spotify);
+var Twitter = require("twitter");
 
 var request = require ('request');
 
 var myTweets = function() {
+	var client = new Twitter(keys.twitter);
 	var params = {screen_name: 'liri_ch'};
 	client.get('statuses/user_timeline', params, function(error,tweets, response) {
 	if(!error) {
@@ -16,9 +18,9 @@ var myTweets = function() {
 		console.log("Hey Liri, Read My Tweets");
 		console.log("==================================")
 
-		for(var i=0; i<20; i++;){
+		for(var i=0; i<20; i++){
 			console.log(tweets[i].text);
-			console.log(tweets[i].creates_at);
+			console.log(tweets[i].created_at);
 			console.log("===================================")
 		}
 	}else{
@@ -27,19 +29,19 @@ var myTweets = function() {
 	});
 }
 
-var spotifyThingSong = function(title{
+var spotifyThingSong = function(title) {
 	if(!title){
 		title = 'Ace of Base - The Sign';
 	}
 	spotify 
-	        .search({tyoe: 'track', query: title})
+	        .search({type: 'track', query: title})
 	        .then(function(response) {
 	        	console.log("====================================");
 	        	console.log("Hey Liri, Spotify this Song.");
 	        	console.log("====================================");
 	        	console.log("Artist: " + response.tracks.items[0].album.artists[0].name);
 	        	console.log("Title: " + response.tracks.items[0].name);
-	        	console.log("URL: " + response.tracks.items[0]href);
+	        	console.log("URL: " + response.tracks.items[0].href);
 	        	console.log("Album: " + response.tracks.items[0].album.name);
 	        })
 	        .catch(function(err) {
@@ -60,7 +62,7 @@ var movieThis = function(requested){
 	   	var movie = JSON.parse(body);
 	   	console.log('Title: ' + movie.Title);
 	   	console.log('Release Year: ' + movie.Year);
-	   	console.log('IMDB Rating: '+ movieimdbRating);
+	   	console.log('IMDB Rating: '+ movie.imdbRating);
 	   	console.log('Rotten Tomatoes Rating: ' + movie.Ratings[1].Value);
 	   	console.log('Country Produced: ' + movie.Contry);
 	   	console.log('Language: ' + movie.Languge);
@@ -69,10 +71,10 @@ var movieThis = function(requested){
 	});
 }
 
-function runcommand(command,requested) {
+function runCommand(command,requested) {
 	switch(command) {
 		case 'my-tweets':
-		mtTweets();
+		myTweets();
 		break;
 		case 'spotify-this-song':
 		spotifyThingSong(requested);
@@ -80,7 +82,7 @@ function runcommand(command,requested) {
 		case 'movie-this':
 		movieThis(requested);
 		break;
-		case 'do=what-it-says';
+		case 'do=what-it-says':
 		fs.read.File(' ./random.txt', 'utf8', function(err, data){
 			data = data.split(",");
 			command = data[0];
